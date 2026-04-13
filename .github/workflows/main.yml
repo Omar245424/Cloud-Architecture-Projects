@@ -3,9 +3,8 @@ name: Deploy Docker Image to ECR
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # Allows manual triggering
+  workflow_dispatch:
 
-# OIDC permissions for keyless authentication
 permissions:
   id-token: write
   contents: read
@@ -18,7 +17,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    # OIDC/IRSA Authentication - No more access keys!
     - name: Configure AWS credentials via OIDC
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -26,30 +24,28 @@ jobs:
         role-session-name: GitHubActions-Backend-${{ github.run_id }}
         aws-region: "us-east-1"
 
-    # ... previous setup steps ...
-
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v2
+
     - name: Build, tag, and push image to Amazon ECR
       id: build-image
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: drink-voting-app/production        # Replace with your ECR repo name
+        ECR_REPOSITORY: drink-voting-app/production
         IMAGE_TAG: ${{ github.sha }}
       run: |
         docker build -f AWS/Deploy-Drink-Voting-Website/Code/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG AWS/Deploy-Drink-Voting-Website/Code/
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
-    #- name: Update ECS Service
-   #   run: |
-      #  aws ecs update-service \
-        #  --cluster your-cluster-name \
-         # --service your-service-name \
-         # --force-new-deployment \
-         # --region us-east-1
 
-       #   --delete \
-          --exclude ".git/*" \
-          --exclude ".github/*" \
-          --exclude "README.md" 
+    # - name: Update ECS Service
+    #   run: |
+    #     aws ecs update-service \
+    #       --cluster your-cluster-name \
+    #       --service your-service-name \
+    #       --force-new-deployment \
+    #       --region us-east-1
+
+          --force-new-deployment \
+          --region us-east-1

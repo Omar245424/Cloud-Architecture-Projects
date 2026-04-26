@@ -35,6 +35,14 @@ jobs:
         ECR_REPOSITORY: drink-voting-app/production
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -f AWS/Deploy-Drink-Voting-Website/Code/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG AWS/Deploy-Drink-Voting-Website/Code/
+        docker build \
+          -f Code/Dockerfile \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+          -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+          Code
+
+        docker push --all-tags $ECR_REGISTRY/$ECR_REPOSITORY
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT

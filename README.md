@@ -26,7 +26,7 @@ The How: Deploy our app across multiple Availability Zones (AZs). Use an Applica
 The Why: If one data center (AZ) fails, our app remains online. Auto Scaling ensures we have exactly the resources needed to handle traffic spikes.
 Database: Use Amazon RDS Multi-AZ or Amazon Aurora with a primary and secondary instance. This provides automatic failover if the primary database goes down. 
 
-3. Security: Defense in Depth
+2. Security: Defense in Depth
 
 The How:VPC Subnets: Place our web/app servers and database in private subnets with no direct internet access. Only the ALB should sit in a public subnet.
 Security Groups: Implement the "Principle of Least Privilege." Our database security group should only allow inbound traffic from the application layer's security group on a specific port (e.g., 3306 for MySQL). Use AWS Secrets Manager to store secrets and auto rotate them automatically.
@@ -40,19 +40,19 @@ The How: Use Amazon ECS Fargate as a Container Orcherstration Engine for Handlin
 The Why: This reduces manaual intervention in the scaling and healing of our app's code as well as reduces operational overhead.
 Database Choice: Use a purpose-built data store. For relational data, use RDS.
 
-5. Operational Excellence: Infrastructure as Code (IaC)
+4. Operational Excellence: Infrastructure as Code (IaC)
 
 The How: Deploy our infrastructure using Terraform instead of clicking in the console. Implement a CI/CD pipeline using Github Actions.
 
 The Why: IaC makes our environment "repeatable" and "version-controlled." If we need to recreate our stack in another region or recover a failed infrastructure in minutes instead of days, we just run a script. 
 
-6. Cost Optimization: Pay only for what you use 
+5. Cost Optimization: Pay only for what you use 
 
 The How: Use Serverless options where possible, such as ECS Fargate for serverless cotainers orcherstration without the overhead of managing or wasting resources on over provisioned VMs.
 
 The Why: Serverless scales down when no one is using our app, meaning we don't pay for over provisioned VMs. 
 
-7. Sustainability: Efficient Energy Use
+6. Sustainability: Efficient Energy Use
 
 The How: Right-size our resources. Monitor utilization with Amazon CloudWatch and decommission unused resources.
 
